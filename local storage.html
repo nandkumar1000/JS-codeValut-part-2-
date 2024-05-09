@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>mouseEvent</title>
+    <style>
+        body {
+            background-color: black; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        .heading {
+            text-align: center;
+            border-radius: 12px;
+            background-color: #fff343; 
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+
+        form {
+            background-color: #ffffff; 
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(1, 0, 0, 0.1);
+            width: 300px;
+        }
+
+        .btn {
+            background-color: #007bff; 
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: #0056b3; 
+        }
+
+        .delete-btn {
+            background-color: #92787b; 
+            color: #ffffff;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background-color: #c82333; 
+        }
+
+        .todo-lists-elem {
+            margin-top: 20px;
+        }
+
+        .main_todo_div {
+            margin-bottom: 10px;
+        }
+
+        ul {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        li {
+            display: inline-block;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1 class="heading">Search Box</h1>
+    <form>
+        <div>
+            <input type="text" id="inputValue">
+            <button class="btn">Search</button>
+        </div>
+        <section class="todo-lists-elem"></section>
+    </form>
+
+    <script>
+        const maintodoElem = document.querySelector(".todo-lists-elem");
+        const inputValue = document.getElementById("inputValue");
+        let localTodoLists = [];
+
+        const getTodoListFromLocal = () => {
+            return JSON.parse(localStorage.getItem('youtubeTodoList'));
+        };
+
+        localTodoLists = getTodoListFromLocal() || [];
+
+        const addTodoLists = (e) => {
+            e.preventDefault();
+            const todoListValue = inputValue.value.trim();
+            if (todoListValue !== "" && !localTodoLists.includes(todoListValue)) {
+                localTodoLists.push(todoListValue);
+                localStorage.setItem("youtubeTodoList", JSON.stringify(localTodoLists));
+                addTodoDynamicElement(todoListValue);
+            }
+        };
+
+        const showTodoList = () => {
+            localTodoLists.forEach((curElem) => {
+                addTodoDynamicElement(curElem);
+            });
+        };
+
+        const addTodoDynamicElement = (todo) => {
+            const divElement = document.createElement("div");
+            divElement.classList.add("main_todo_div");
+            divElement.innerHTML = `
+                <li>${todo}</li>
+                <button class="delete-btn">Delete</button>
+            `;
+            maintodoElem.append(divElement);
+        };
+
+        const removeTodoElem = (e) => {
+            const todoToRemove = e.target.parentNode;
+            const todoText = todoToRemove.querySelector("li").innerText;
+            localTodoLists = localTodoLists.filter(todo => todo !== todoText);
+            localStorage.setItem("youtubeTodoList", JSON.stringify(localTodoLists));
+            todoToRemove.remove();
+        };
+
+        maintodoElem.addEventListener('click', (e) => {
+            if (e.target.classList.contains('delete-btn')) {
+                removeTodoElem(e);
+            }
+        });
+
+        document.querySelector(".btn").addEventListener("click", (e) => {
+            addTodoLists(e);
+        });
+
+        showTodoList();
+    </script>
+</body>
+</html>
